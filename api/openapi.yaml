@@ -1,0 +1,539 @@
+openapi: 3.0.0
+info:
+  description: Building the next evolution of actionable AI.
+  title: Autonomous API
+  version: 1.0.0
+  x-konfig-has-globally-required-security: true
+servers:
+- url: https://api.induced.ai/api/v1
+tags:
+- name: Extraction
+- name: Autonomous
+- name: Task
+- name: Feedback
+paths:
+  /autonomous:
+    post:
+      operationId: Task_execute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskExecuteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskExecuteResponse'
+          description: Task executed successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Execute an Autonomous Task
+      tags:
+      - Task
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--autonomous
+      x-content-type: application/json
+      x-accepts: application/json
+  /autonomous/{id}:
+    get:
+      operationId: Autonomous_getResult
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutonomousGetResultResponse'
+          description: Task result retrieved successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Get Autonomous Task Result
+      tags:
+      - Autonomous
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--autonomous-id
+      x-accepts: application/json
+  /autonomous/{id}/stop:
+    post:
+      operationId: Autonomous_terminateTask
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Task stopped successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Stop an Autonomous Task
+      tags:
+      - Autonomous
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--autonomous-id-stop
+      x-accepts: application/json
+  /autonomous/{id}/feedback:
+    post:
+      operationId: Feedback_submission
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackSubmissionRequest'
+        required: true
+      responses:
+        "200":
+          description: Feedback received successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Provide Feedback for an Autonomous Task
+      tags:
+      - Feedback
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--autonomous-id-feedback
+      x-content-type: application/json
+      x-accepts: application/json
+  /extract:
+    post:
+      operationId: Extraction_fromUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractionFromUrlRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionFromUrlResponse'
+          description: Data extracted successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Extract data from a URL
+      tags:
+      - Extraction
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--extract
+      x-content-type: application/json
+      x-accepts: application/json
+  /extract/{id}:
+    get:
+      operationId: Extraction_getResult
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionGetResultResponse'
+          description: Extraction result retrieved successfully
+      security:
+      - ApiKeyAuth: []
+      summary: Get extraction result
+      tags:
+      - Extraction
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--extract-id
+      x-accepts: application/json
+components:
+  schemas:
+    TaskExecuteRequest:
+      example:
+        task: Go to google and search for Elon Musk
+      properties:
+        task:
+          example: Go to google and search for Elon Musk
+          type: string
+          x-konfig-original-example: Go to google and search for Elon Musk
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-TaskExecuteRequest-properties-task
+      type: object
+    FeedbackSubmissionRequest:
+      example:
+        feedback: true
+      properties:
+        feedback:
+          type: boolean
+      type: object
+    ExtractionFromUrlRequest:
+      example:
+        columns: columns
+        query: query
+        limit: 0
+        format: json
+        url: url
+      properties:
+        url:
+          type: string
+        query:
+          type: string
+        columns:
+          type: string
+        limit:
+          type: integer
+        format:
+          enum:
+          - json
+          - csv
+          - markdown
+          type: string
+      type: object
+    TaskExecuteResponse:
+      example:
+        timeTaken: 0
+        data:
+          id: id
+          streamingUrl: streamingUrl
+          watchUrl: watchUrl
+        success: true
+        requestId: requestId
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/TaskExecuteResponse_data'
+        requestId:
+          type: string
+        timeTaken:
+          type: integer
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    AutonomousGetResultResponse:
+      example:
+        timeTaken: 0
+        data:
+          run:
+            result: result
+            id: id
+            steps:
+            - thought: thought
+              step: step
+              id: id
+              status: status
+            - thought: thought
+              step: step
+              id: id
+              status: status
+            status: status
+            objective: objective
+        success: true
+        requestId: requestId
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/AutonomousGetResultResponse_data'
+        requestId:
+          type: string
+        timeTaken:
+          type: integer
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ExtractionFromUrlResponse:
+      example:
+        timeTaken: 0
+        data:
+          id: id
+          status: status
+          objective: objective
+        success: true
+        requestId: requestId
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ExtractionFromUrlResponse_data'
+        requestId:
+          type: string
+        timeTaken:
+          type: integer
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ExtractionGetResultResponse:
+      example:
+        timeTaken: 6
+        data:
+          run:
+            output:
+              name: name
+              format: format
+              value: value
+            id: id
+            screenshot: screenshot
+            time: 0.8008281904610115
+            url: url
+            status: status
+            objective: objective
+        success: true
+        requestId: requestId
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ExtractionGetResultResponse_data'
+        requestId:
+          type: string
+        timeTaken:
+          type: integer
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    konfig-generated-schema-components-schemas-TaskExecuteRequest-properties-task:
+      example: Go to google and search for Elon Musk
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-single-parameter-schema-post--autonomous:
+      properties:
+        task:
+          example: Go to google and search for Elon Musk
+          type: string
+          x-konfig-original-example: Go to google and search for Elon Musk
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-TaskExecuteRequest-properties-task
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-get--autonomous-id:
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - id
+    konfig-generated-schema-single-parameter-schema-post--autonomous-id-stop:
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - id
+    konfig-generated-schema-single-parameter-schema-post--autonomous-id-feedback:
+      properties:
+        id:
+          type: string
+        feedback:
+          type: boolean
+      required:
+      - id
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - id
+    konfig-generated-schema-single-parameter-schema-post--extract:
+      properties:
+        url:
+          type: string
+        query:
+          type: string
+        columns:
+          type: string
+        limit:
+          type: integer
+        format:
+          enum:
+          - json
+          - csv
+          - markdown
+          type: string
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-get--extract-id:
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - id
+    TaskExecuteResponse_data:
+      example:
+        id: id
+        streamingUrl: streamingUrl
+        watchUrl: watchUrl
+      properties:
+        id:
+          type: string
+        streamingUrl:
+          type: string
+        watchUrl:
+          type: string
+      type: object
+    AutonomousGetResultResponse_data_run_steps_inner:
+      example:
+        thought: thought
+        step: step
+        id: id
+        status: status
+      properties:
+        id:
+          type: string
+        step:
+          type: string
+        status:
+          type: string
+        thought:
+          type: string
+      type: object
+    AutonomousGetResultResponse_data_run:
+      example:
+        result: result
+        id: id
+        steps:
+        - thought: thought
+          step: step
+          id: id
+          status: status
+        - thought: thought
+          step: step
+          id: id
+          status: status
+        status: status
+        objective: objective
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        objective:
+          type: string
+        steps:
+          items:
+            $ref: '#/components/schemas/AutonomousGetResultResponse_data_run_steps_inner'
+          type: array
+        result:
+          type: string
+      type: object
+    AutonomousGetResultResponse_data:
+      example:
+        run:
+          result: result
+          id: id
+          steps:
+          - thought: thought
+            step: step
+            id: id
+            status: status
+          - thought: thought
+            step: step
+            id: id
+            status: status
+          status: status
+          objective: objective
+      properties:
+        run:
+          $ref: '#/components/schemas/AutonomousGetResultResponse_data_run'
+      type: object
+    ExtractionFromUrlResponse_data:
+      example:
+        id: id
+        status: status
+        objective: objective
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        objective:
+          type: string
+      type: object
+    ExtractionGetResultResponse_data_run_output:
+      example:
+        name: name
+        format: format
+        value: value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        format:
+          type: string
+      type: object
+    ExtractionGetResultResponse_data_run:
+      example:
+        output:
+          name: name
+          format: format
+          value: value
+        id: id
+        screenshot: screenshot
+        time: 0.8008281904610115
+        url: url
+        status: status
+        objective: objective
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        objective:
+          type: string
+        url:
+          type: string
+        screenshot:
+          type: string
+        output:
+          $ref: '#/components/schemas/ExtractionGetResultResponse_data_run_output'
+        time:
+          type: number
+      type: object
+    ExtractionGetResultResponse_data:
+      example:
+        run:
+          output:
+            name: name
+            format: format
+            value: value
+          id: id
+          screenshot: screenshot
+          time: 0.8008281904610115
+          url: url
+          status: status
+          objective: objective
+      properties:
+        run:
+          $ref: '#/components/schemas/ExtractionGetResultResponse_data_run'
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      in: header
+      name: x-api-key
+      type: apiKey
+      x-konfig-globally-required-security: true
+
